@@ -16,3 +16,7 @@ Do you want to know your program Automatically adjusting brightness of image in 
 * Docker Test: testing computer vision application for different docker setup; how to optimize input/output for docker which use inputs such as images or videos; how to test for load balancing, number of pods, memory usage; CPU usage; Bandwidth ; how to compress data; how to encrypt/decrypt data for using in docker; check the connectivity issue; REST API, FAST API, JSON file checker; converting format; converting labeling format; check the version of library and packages; 
 * profiling the performance of the pipeline; writing clean code for certification; software certification standards, e.g. ISO27001, DO160
 * 
+
+
+# image processing functions to get information from each step of computer vision algorithms
+in the "ImageProcessingClass" I created several functions which help you to get more information from each image after each step of image processing algorithms 
