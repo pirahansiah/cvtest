@@ -138,6 +138,9 @@
   <ItemGroup>
     <ClCompile Include="ImageProcessingClass.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="a.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets" Condition="Exists('packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets')" />
