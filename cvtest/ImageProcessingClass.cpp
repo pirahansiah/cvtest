@@ -1,6 +1,7 @@
 #include "ImageProcessingClass.h"
 
 // Farshid Pirahansiah
+// Optimization computer vision with deep learning in IoT device for real time purpose
 // March 2022 
 
 // ! this is a very critical comment
