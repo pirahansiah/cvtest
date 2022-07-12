@@ -132,15 +132,19 @@ int func_image_info(cv::Mat src, cv::Mat &dst /*output*/)
         r += "C";
         r += (chans + '0');
         printf("\t the image type is = %s \n", r.c_str());
-        //end: image type     
+        //end: image type     cv::Size s = src.size();         int height = s.height;//rows          int width = s.width;//cols 
         int rows = src.rows;
         int cols = src.cols;
-        printf("\t the image rows = %d and cols = %d\n", rows, cols);
-        cv::Size s = src.size();
-        int height = s.height;//rows 
-        int width = s.width;//cols 
-        printf("\t the image height = %d and width = %d\n", height, width);
-        
+        printf("\t the image rows or height = %d and cols or width = %d\n", rows, cols);        
+	if (src.channels()==3)
+	{		
+	    std::cout<<"Image is Color \n";
+	}
+	else
+	{
+	    std::cout<<"Image is Grayscale \n";
+	}
+	    
         //src.convertTo(src, CV_64F);
         //cv::cvtColor(src, src, cv::COLOR_GRAY2RGB);
         cv::Mat hist;
