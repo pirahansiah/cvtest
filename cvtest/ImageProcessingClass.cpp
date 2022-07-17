@@ -173,7 +173,7 @@ int main()
     {
 
         cv::Mat dst;
-        cv::Mat src=cv::imread("a.png");
+        cv::Mat src=cv::imread("c:\\tiziran.png");
         cv::imshow("main image ", src);
         cv::waitKey(delay_show);
         func_image_info(src, dst);

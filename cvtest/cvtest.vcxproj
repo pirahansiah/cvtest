@@ -120,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +145,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets" Condition="Exists('packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets')" />
+    <Import Project="packages\OpenCV5_StaticLib_VS22_NuGet.2022.7.7\build\native\OpenCV5_StaticLib_VS22_NuGet.targets" Condition="Exists('packages\OpenCV5_StaticLib_VS22_NuGet.2022.7.7\build\native\OpenCV5_StaticLib_VS22_NuGet.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -151,5 +153,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\opencv_450.4.5.0.202107263\build\native\opencv_450.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\opencv_450.4.5.0.202107263\build\native\opencv_450.props'))" />
     <Error Condition="!Exists('packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\opencv_450.4.5.0.202107263\build\native\opencv_450.targets'))" />
+    <Error Condition="!Exists('packages\OpenCV5_StaticLib_VS22_NuGet.2022.7.7\build\native\OpenCV5_StaticLib_VS22_NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\OpenCV5_StaticLib_VS22_NuGet.2022.7.7\build\native\OpenCV5_StaticLib_VS22_NuGet.targets'))" />
   </Target>
 </Project>
