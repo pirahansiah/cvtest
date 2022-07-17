@@ -152,7 +152,7 @@ int func_image_info(cv::Mat src, cv::Mat &dst /*output*/)
         {
             histogram_gray(src, hist);
             int nzCount = cv::countNonZero(src);
-            printf("\t the number of non zero pixels is = %d of total %d pizels \n", nzCount, height * width);
+            printf("\t the number of non zero pixels is = %d of total %d pizels \n", nzCount, rows * cols);
         }
         else if (type >= 2)
         {
@@ -182,6 +182,20 @@ int main()
         cv::waitKey(delay_show);
         func_image_info(src, dst);
         cv::imshow("histogram of image ", dst);
+        cv::waitKey(delay_show);
+
+        cv::Mat dstResize;
+        cv::resize(src, dstResize, cv::Size(),  0.1,  0.1, cv::INTER_CUBIC); //cv::INTER_LINEAR ,cv::INTER_AREA
+        cv::imshow("re size of image ", dstResize);
+        cv::waitKey(delay_show);
+
+        //copy small Mat to bigger Mat
+
+
+        cv::Mat bigImage=cv::Mat::zeros(src.size(), src.type());
+        cv::Rect roi(cv::Point(0, 0), dstResize.size());
+        dstResize.copyTo(bigImage(roi));
+        cv::imshow("re bigImage of image ", bigImage);
         cv::waitKey(delay_show);
 	    
     }
