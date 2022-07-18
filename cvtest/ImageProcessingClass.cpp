@@ -16,7 +16,7 @@
 #include <typeinfo>
 #include <new>
 #include <math.h> //round 
-//  Install-Package opencv_450 -Version 4.5.0.202107263
+// Install-Package OpenCV5_StaticLib_VS22_NuGet -Version 2022.7.7 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
