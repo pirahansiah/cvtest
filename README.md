@@ -1,165 +1,105 @@
 # CVTest — Computer Vision Testing Framework
 
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)]()
-[![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022-purple?logo=visualstudio&logoColor=white)]()
-[![OpenCV](https://img.shields.io/badge/OpenCV-4.10-blue?logo=opencv&logoColor=white)](https://opencv.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![CMake](https://img.shields.io/badge/CMake-3.20+-064F8C?logo=cmake&logoColor=white)]()
+[![OpenCV](https://img.shields.io/badge/OpenCV-5.x-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Comprehensive testing framework for computer vision and deep learning applications — unit tests, integration tests, system tests, and acceptance tests.
-
-## Overview
-
-Standardized testing methodologies for CV applications where traditional software testing falls short. This project addresses the unique challenges of testing **image and video processing pipelines** where outputs are visual and correctness is subjective.
-
-## Test Categories
-
-| Test Type | Purpose | Tools |
-|-----------|---------|-------|
-| **Unit Tests** | Individual function correctness | Google Test, OpenCV assertions |
-| **Integration Tests** | Pipeline stage interactions | Custom validators |
-| **System Tests** | End-to-end application behavior | Docker, profiling |
-| **Acceptance Tests** | Business requirement validation | Visual comparison metrics |
-
-## Key Capabilities
-
-### Image Quality Metrics
-
-| Metric | Description | Use Case |
-|--------|-------------|----------|
-| **PSNR** | Peak Signal-to-Noise Ratio | Image reconstruction quality |
-| **SSIM** | Structural Similarity Index | Perceptual quality comparison |
-| **MSE** | Mean Squared Error | Pixel-level accuracy |
-| **LPIPS** | Learned Perceptual Image Patch Similarity | Deep feature-based quality |
-| **FID** | Fréchet Inception Distance | Generated image quality |
-| **CLIP Score** | Text-image alignment | Generative model evaluation |
-
-### Performance Profiling
-
-- **Processing time** per frame / per pipeline stage
-- **Memory usage** monitoring (peak, average, leak detection)
-- **CPU/GPU utilization** tracking
-- **FPS** measurement under load
-- **Latency distribution** (P50, P95, P99)
-
-### Docker Testing
-
-- Containerized environment testing
-- Input/output format validation
-- Load balancing and pod scaling tests
-- Bandwidth and compression benchmarks
-- REST API / FastAPI endpoint validation
-
-### Hardware Evaluation
-
-- Multi-platform testing (CPU, GPU, edge devices)
-- Comparison across hardware architectures
-- Power consumption profiling
-- Thermal throttling detection
-
-## ImageProcessingClass
-
-The `ImageProcessingClass` provides utility functions to extract information from each step of CV algorithms:
-
-```cpp
-#include "ImageProcessingClass.h"
-
-// Get intermediate results from pipeline stages
-ImageProcessingClass ipc;
-auto featureMap = ipc.getIntermediateResult(stage_idx);
-auto metrics = ipc.computeMetrics(groundTruth, output);
-```
-
-## 2025–2026: Modern CV Testing Tools
-
-### Testing Frameworks
-
-| Tool | Type | Key Feature |
-|------|------|-------------|
-| **Google Test** | Unit testing | C++ standard, mocking |
-| **pytest** | Python testing | Fixture-based, parametrized |
-| **FiftyOne** | Dataset evaluation | Visual model analysis |
-| **TorchMetrics** | DL metrics | Standardized metric computation |
-| **OpenCV DNN** | Inference testing | Cross-backend validation |
-
-### CI/CD for CV
-
-```yaml
-# GitHub Actions example
-- name: Run CV Tests
-  run: |
-    pytest tests/unit/ -v
-    pytest tests/integration/ -v
-    python tests/visual_regression.py --threshold 0.95
-    docker-compose -f tests/docker-compose.test.yml up
-```
-
-### Visual Regression Testing (2025+)
-
-| Method | Accuracy | Speed |
-|--------|----------|-------|
-| **Pixel-wise diff** | Low (brittle) | Fast |
-| **SSIM comparison** | Medium | Fast |
-| **LPIPS (perceptual)** | High | Medium |
-| **CLIP-based evaluation** | High (semantic) | Slow |
-| **Human preference score** | Gold standard | Manual |
-
-### Recommended Stack
-
-```bash
-# Testing dependencies
-pip install pytest fiftyone torchmetrics lpips
-pip install ultralytics onnxruntime-gpu
-
-# C++ testing
-vcpkg install gtest opencv4
-```
-
-## Software Certification
-
-| Standard | Domain |
-|----------|--------|
-| **ISO 27001** | Information security management |
-| **DO-160** | Environmental conditions for airborne equipment |
-| **ISO 26262** | Automotive functional safety |
-| **IEC 62304** | Medical device software lifecycle |
-| **ISO 9001** | Quality management systems |
+Computer vision image processing utilities with histogram computation, unit tests, and CMake cross-platform build.
 
 ## Project Structure
 
 ```
 cvtest/
-├── Book/
-│   └── Chapter_01_01.cpp    # Chapter code examples
 ├── cvtest/
-│   ├── ImageProcessingClass.cpp
-│   ├── ImageProcessingClass.h
-│   ├── cvtest.sln
-│   └── cvtest.vcxproj
-├── LICENSE
-└── README.md
+│   ├── ImageProcessingClass.cpp   # Core image processing functions
+│   ├── ImageProcessingClass.h     # Public API header
+│   ├── cvtest.sln                 # Visual Studio solution
+│   └── cvtest.vcxproj             # VS project file
+├── Book/
+│   └── Chapter_01_01.cpp          # Book chapter examples
+├── tests/
+│   ├── CMakeLists.txt             # Google Test configuration
+│   ├── test_histogram.cpp         # Histogram unit tests
+│   └── test_image_processing.cpp  # Image info unit tests
+├── CMakeLists.txt                 # Top-level CMake build
+├── Dockerfile                     # Multi-stage Docker build
+├── README.md
+└── LICENSE
 ```
+
+## Build
+
+### CMake (Linux/macOS)
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+./build/cvtest Image/test_image.jpg
+```
+
+### Visual Studio 2022
+
+Open `cvtest/cvtest.sln` and build with v143 toolset.
+
+## Testing
+
+```bash
+cmake -B build -DBUILD_TESTS=ON
+cmake --build build --parallel
+cd build && ctest --output-on-failure
+```
+
+### Google Test
+
+Tests cover:
+- **Histogram functions**: color/gray histogram computation, output dimensions, edge cases (empty images, uniform images)
+- **Image processing**: BGR and grayscale processing, error handling
+
+## Docker
+
+```bash
+docker build -t cvtest .
+docker run --rm -v $(pwd)/cvtest:/data cvtest /data/a.png
+```
+
+## Bug Fixes (v2.0)
+
+- **Fixed off-by-one**: `histogram_gray()` now initializes all 256 bins (was `< 255`)
+- **Fixed API misuse**: `Chapter_01_01.cpp` now uses `cv::cvtColor` instead of `convertTo` with wrong constant
+- **Added const correctness**: All function parameters use `const cv::Mat&`
+- **Cross-platform paths**: Removed hardcoded Windows paths, use `argv[1]` or defaults
+- **Removed broken files**: Deleted `test2.cpp` (incomplete `cout<<` statement)
+- **Namespace**: Functions wrapped in `cvtest::` namespace
+
+## 12-Month Roadmap
+
+| Phase | Timeline | Milestone |
+|-------|----------|-----------|
+| **Phase 1** | Month 1-2 | Comprehensive unit tests, cross-platform CMake, CI/CD pipeline |
+| **Phase 2** | Month 3-4 | Image filtering pipeline (blur, sharpen, edge detection, morphology) |
+| **Phase 3** | Month 5-6 | Video processing support with FFmpeg integration |
+| **Phase 4** | Month 7-8 | ONNX Runtime integration for ML model inference |
+| **Phase 5** | Month 9-10 | Performance benchmarking suite, SIMD/NEON optimization |
+| **Phase 6** | Month 11-12 | Multi-platform CI (Linux, Windows, macOS), Docker registry, docs |
 
 ## Requirements
 
-- Visual Studio 2022 (v143 toolset)
-- OpenCV 4.10+
-- Google Test (via vcpkg)
 - CMake 3.20+
+- C++17 compiler (GCC 12+, Clang 15+, MSVC v143)
+- OpenCV 5.x
+- Google Test (fetched automatically by CMake)
 
 ## References
 
-- [OpenCV Testing Module](https://github.com/opencv/opencv/tree/4.x/modules/ts)
+- [OpenCV Documentation](https://docs.opencv.org/)
 - [Google Test Primer](https://google.github.io/googletest/primer.html)
-- [FiftyOne Model Evaluation](https://docs.voxel51.com/)
-- [TorchMetrics](https://torchmetrics.readthedocs.io/)
+- [CMake Documentation](https://cmake.org/cmake/help/latest/)
 
 ## Author
 
-**Farshid Pirahansiah**
-- Website: [pirahansiah.com](https://www.pirahansiah.com)
-- GitHub: [github.com/pirahansiah](https://github.com/pirahansiah)
-- LinkedIn: [linkedin.com/in/pirahansiah](https://www.linkedin.com/in/pirahansiah)
+**Dr. Farshid Pirahansiah** — [LinkedIn](https://linkedin.com/in/pirahansiah) | [GitHub](https://github.com/pirahansiah)
 
 ## License
 
-Apache License 2.0 — See [LICENSE](LICENSE) for details.
+MIT License — See [LICENSE](LICENSE) for details.

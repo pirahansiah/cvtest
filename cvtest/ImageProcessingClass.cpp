@@ -1,202 +1,188 @@
+// ImageProcessingClass.cpp
+// Computer vision image processing utilities with histogram computation.
+// Modernized to C++17 with const correctness and bug fixes.
+
 #include "ImageProcessingClass.h"
 
-// Farshid Pirahansiah
-// Optimization computer vision with deep learning in IoT device for real time purpose
-// March 2022 
-
-// ! this is a very critical comment
-// * this is a highlighted comment
-// TODO:  this is a TODO comment
-// ? this is a question comment
-// I use /*output*/ infront of each output variable to show input/output correctly
-
 #include <iostream>
-#include <cstdio>
 #include <string>
-#include <typeinfo>
-#include <new>
-#include <math.h> //round 
-// Install-Package OpenCV5_StaticLib_VS22_NuGet -Version 2022.7.7 
+#include <vector>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/core/ocl.hpp>
 
+namespace cvtest {
 
-int histogram_color(cv::Mat src, cv::Mat &dst /*output*/)
-{
-    std::vector<cv::Mat> bgr_planes;
-    split(src, bgr_planes);
-    int histSize = 256;
-    float range[] = { 0, 256 }; //the upper boundary is exclusive
-    const float* histRange[] = { range };
-    bool uniform = true, accumulate = false;
-    cv::Mat b_hist, g_hist, r_hist;
-    calcHist(&bgr_planes[0], 1, 0, cv::Mat(), b_hist, 1, &histSize, histRange, uniform, accumulate);
-    calcHist(&bgr_planes[1], 1, 0, cv::Mat(), g_hist, 1, &histSize, histRange, uniform, accumulate);
-    calcHist(&bgr_planes[2], 1, 0, cv::Mat(), r_hist, 1, &histSize, histRange, uniform, accumulate);
-    int hist_w = 512, hist_h = 400;
-    int bin_w = cvRound((double)hist_w / histSize);
-    cv::Mat histImage(hist_h, hist_w, CV_8UC3, cv::Scalar(0, 0, 0));
-    normalize(b_hist, b_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
-    normalize(g_hist, g_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
-    normalize(r_hist, r_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
-    for (int i = 1; i < histSize; i++)
-    {
-        line(histImage, cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
-            cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))),
-            cv::Scalar(255, 0, 0), 2, 8, 0);
-        line(histImage, cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
-            cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))),
-            cv::Scalar(0, 255, 0), 2, 8, 0);
-        line(histImage, cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
-            cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))),
-            cv::Scalar(0, 0, 255), 2, 8, 0);
+int histogram_color(const cv::Mat& src, cv::Mat& dst) {
+    if (src.empty() || src.channels() != 3) {
+        std::cerr << "histogram_color: input must be a 3-channel BGR image\n";
+        return -1;
     }
-    dst= histImage;
+
+    std::vector<cv::Mat> bgr_planes;
+    cv::split(src, bgr_planes);
+
+    int hist_size = 256;
+    float range[] = {0.0f, 256.0f};
+    const float* hist_range[] = {range};
+
+    cv::Mat b_hist, g_hist, r_hist;
+    cv::calcHist(&bgr_planes[0], 1, 0, cv::Mat(), b_hist, 1, &hist_size, hist_range, true, false);
+    cv::calcHist(&bgr_planes[1], 1, 0, cv::Mat(), g_hist, 1, &hist_size, hist_range, true, false);
+    cv::calcHist(&bgr_planes[2], 1, 0, cv::Mat(), r_hist, 1, &hist_size, hist_range, true, false);
+
+    int hist_w = 512;
+    int hist_h = 400;
+    int bin_w = cvRound(static_cast<double>(hist_w) / hist_size);
+
+    cv::Mat hist_image(hist_h, hist_w, CV_8UC3, cv::Scalar(0, 0, 0));
+
+    cv::normalize(b_hist, b_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+    cv::normalize(g_hist, g_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+    cv::normalize(r_hist, r_hist, 0, hist_image.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+    for (int i = 1; i < hist_size; ++i) {
+        cv::line(hist_image,
+                 cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
+                 cv::Point(bin_w * i, hist_h - cvRound(b_hist.at<float>(i))),
+                 cv::Scalar(255, 0, 0), 2, cv::LINE_AA);
+        cv::line(hist_image,
+                 cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
+                 cv::Point(bin_w * i, hist_h - cvRound(g_hist.at<float>(i))),
+                 cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+        cv::line(hist_image,
+                 cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
+                 cv::Point(bin_w * i, hist_h - cvRound(r_hist.at<float>(i))),
+                 cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
+    }
+
+    dst = hist_image;
     return 0;
 }
 
-int histogram_gray(cv::Mat image, cv::Mat &out /*output*/)
-{
-    // allcoate memory for no of pixels for each intensity value
-    int histogram[256];
-
-    // initialize all intensity values to 0
-    for (int i = 0; i < 255; i++)
-    {
-        histogram[i] = 0;
+int histogram_gray(const cv::Mat& image, cv::Mat& out) {
+    if (image.empty()) {
+        std::cerr << "histogram_gray: input image is empty\n";
+        return -1;
     }
 
-    // calculate the no of pixels for each intensity values
-    for (int y = 0; y < image.rows; y++)
-        for (int x = 0; x < image.cols; x++)
-            histogram[(int)image.at<uchar>(y, x)]++;
+    // Fixed off-by-one: initialize all 256 bins
+    std::vector<int> histogram(256, 0);
 
-    /*for (int i = 0; i < 256; i++)
-        cout << histogram[i] << " ";*/
-
-        // draw the histograms
-    int hist_w = 512; int hist_h = 400;
-    int bin_w = cvRound((double)hist_w / 256);
-
-    cv::Mat histImage(hist_h, hist_w, CV_8UC1, cv::Scalar(255, 255, 255));
-
-    // find the maximum intensity element from histogram
-    int max = histogram[0];
-    for (int i = 1; i < 256; i++) {
-        if (max < histogram[i]) {
-            max = histogram[i];
+    for (int y = 0; y < image.rows; ++y) {
+        for (int x = 0; x < image.cols; ++x) {
+            ++histogram[static_cast<int>(image.at<uchar>(y, x))];
         }
     }
 
-    // normalize the histogram between 0 and histImage.rows
+    int hist_w = 512;
+    int hist_h = 400;
+    int bin_w = cvRound(static_cast<double>(hist_w) / 256);
 
-    for (int i = 0; i < 255; i++) {
-        histogram[i] = ((double)histogram[i] / max) * histImage.rows;
+    cv::Mat hist_image(hist_h, hist_w, CV_8UC1, cv::Scalar(255));
+
+    int max_val = *std::max_element(histogram.begin(), histogram.end());
+    if (max_val == 0) {
+        out = hist_image;
+        return 0;
     }
 
-
-    // draw the intensity line for histogram
-    for (int i = 0; i < 255; i++)
-    {
-        line(histImage, cv::Point(bin_w * (i), hist_h),
-            cv::Point(bin_w * (i), hist_h - histogram[i]),
-            cv::Scalar(0, 0, 0), 1, 8, 0);
+    for (int i = 0; i < 256; ++i) {
+        histogram[i] = static_cast<int>((static_cast<double>(histogram[i]) / max_val) * hist_image.rows);
     }
 
-    out = histImage;
+    for (int i = 0; i < 256; ++i) {
+        cv::line(hist_image,
+                 cv::Point(bin_w * i, hist_h),
+                 cv::Point(bin_w * i, hist_h - histogram[i]),
+                 cv::Scalar(0), 1, cv::LINE_AA);
+    }
+
+    out = hist_image;
     return 0;
 }
 
-int func_image_info(cv::Mat src, cv::Mat &dst /*output*/)
-{
-    try
-    {
-        printf("Image info ... \n");
-        //start: image type 
+int func_image_info(const cv::Mat& src, cv::Mat& dst) {
+    try {
         int type = src.type();
-        std::string r;
         uchar depth = type & CV_MAT_DEPTH_MASK;
         uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+        std::string type_str;
         switch (depth) {
-        case CV_8U:  r = "8U"; break;
-        case CV_8S:  r = "8S"; break;
-        case CV_16U: r = "16U"; break;
-        case CV_16S: r = "16S"; break;
-        case CV_32S: r = "32S"; break;
-        case CV_32F: r = "32F"; break;
-        case CV_64F: r = "64F"; break;
-        default:     r = "User"; break;
+            case CV_8U:  type_str = "8U"; break;
+            case CV_8S:  type_str = "8S"; break;
+            case CV_16U: type_str = "16U"; break;
+            case CV_16S: type_str = "16S"; break;
+            case CV_32S: type_str = "32S"; break;
+            case CV_32F: type_str = "32F"; break;
+            case CV_64F: type_str = "64F"; break;
+            default:     type_str = "User"; break;
         }
-        r += "C";
-        r += (chans + '0');
-        printf("\t the image type is = %s \n", r.c_str());
-        //end: image type     cv::Size s = src.size();         int height = s.height;//rows          int width = s.width;//cols 
-        int rows = src.rows;
-        int cols = src.cols;
-        printf("\t the image rows or height = %d and cols or width = %d\n", rows, cols);        
-	if (src.channels()==3)
-	{		
-	    std::cout<<"Image is Color \n";
-	}
-	else
-	{
-	    std::cout<<"Image is Grayscale \n";
-	}
-	    
-        //src.convertTo(src, CV_64F);
-        //cv::cvtColor(src, src, cv::COLOR_GRAY2RGB);
+        type_str += "C" + std::to_string(chans);
+
+        std::cout << "Image info:\n";
+        std::cout << "\tType: " << type_str << "\n";
+        std::cout << "\tDimensions: " << src.rows << " x " << src.cols << "\n";
+
+        if (src.channels() == 3) {
+            std::cout << "\tColor: BGR\n";
+        } else {
+            std::cout << "\tColor: Grayscale\n";
+        }
+
         cv::Mat hist;
-        if (type < 2)
-        {
+        if (src.channels() == 1) {
             histogram_gray(src, hist);
-            int nzCount = cv::countNonZero(src);
-            printf("\t the number of non zero pixels is = %d of total %d pizels \n", nzCount, rows * cols);
-        }
-        else if (type >= 2)
-        {
+            int nz_count = cv::countNonZero(src);
+            std::cout << "\tNon-zero pixels: " << nz_count
+                      << " of " << (src.rows * src.cols) << "\n";
+        } else {
             histogram_color(src, hist);
         }
-        dst= hist;
-    }
-    catch (cv::Exception& e)
-    {
-        const char* err_msg = e.what();
-        std::cout << "exception caught: " << err_msg << std::endl;
+        dst = hist;
+    } catch (const cv::Exception& e) {
+        std::cerr << "OpenCV exception: " << e.what() << "\n";
+        return -1;
     }
     return 0;
 }
 
-int main()
-{	
-    bool show = true;
-    int delay_show = 10000;
-    
-    if (show)
-    {
+}  // namespace cvtest
 
-        cv::Mat dst;
-        cv::Mat src=cv::imread("c:\\tiziran.png");
-        cv::imshow("main image ", src);
-        cv::waitKey(delay_show);
-        func_image_info(src, dst);
-        cv::imshow("histogram of image ", dst);
-        cv::waitKey(delay_show);
-
-        cv::Mat dstResize;
-        cv::resize(src, dstResize, cv::Size(),  0.1,  0.1, cv::INTER_CUBIC); //cv::INTER_LINEAR ,cv::INTER_AREA
-        cv::imshow("re size of image ", dstResize);
-        cv::waitKey(delay_show);
-
-        //copy small Mat to bigger Mat
-
-
-        cv::Mat bigImage=cv::Mat::zeros(src.size(), src.type());
-        cv::Rect roi(cv::Point(0, 0), dstResize.size());
-        dstResize.copyTo(bigImage(roi));
-        cv::imshow("re bigImage of image ", bigImage);
-        cv::waitKey(delay_show);
-	    
+int main(int argc, char* argv[]) {
+    std::string image_path = "Image/test_image.jpg";
+    if (argc > 1) {
+        image_path = argv[1];
     }
+
+    cv::Mat src = cv::imread(image_path, cv::IMREAD_COLOR);
+    if (src.empty()) {
+        std::cerr << "Error: cannot read image: " << image_path << "\n";
+        return 1;
+    }
+
+    cv::imshow("Original", src);
+    cv::waitKey(1000);
+
+    cv::Mat hist;
+    cvtest::func_image_info(src, hist);
+    cv::imshow("Histogram", hist);
+    cv::waitKey(1000);
+
+    cv::Mat resized;
+    double scale = 0.1;
+    cv::resize(src, resized, cv::Size(), scale, scale, cv::INTER_CUBIC);
+    cv::imshow("Resized", resized);
+    cv::waitKey(1000);
+
+    cv::Mat big_image = cv::Mat::zeros(src.size(), src.type());
+    cv::Rect roi(cv::Point(0, 0), resized.size());
+    resized.copyTo(big_image(roi));
+    cv::imshow("Copy to ROI", big_image);
+    cv::waitKey(0);
+
+    cv::destroyAllWindows();
+    return 0;
 }
