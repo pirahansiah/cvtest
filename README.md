@@ -1,22 +1,165 @@
-# cvtest
-# Computer Vision Test - Start project 2020
-## Unit Test, Integration Test, System Test, Acceptance Test for Computer Vision and Deep Learning 
+# CVTest — Computer Vision Testing Framework
 
-Do you want to test your output of computer vision application which is video or images? 
+[![C++](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)]()
+[![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022-purple?logo=visualstudio&logoColor=white)]()
+[![OpenCV](https://img.shields.io/badge/OpenCV-4.10-blue?logo=opencv&logoColor=white)](https://opencv.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
+Comprehensive testing framework for computer vision and deep learning applications — unit tests, integration tests, system tests, and acceptance tests.
 
-## Standard test for computer vision application 
-There isn't any standard test for computer vision program. I wrote many test by myself and I would like to share some of them here. For example, I write a program to test docker and check the processing time, memory usage, CPU usage, etc. 
-In computer vision application sometime you need to check the output which is the image. How do you want to check it. I write some program to check the output which is the image and compare the ground truth. I check some well known methods such as PSNR, SSIM, Image quality, distortion, brightness, sharpness, etc.
-Furthermore, I check much different hardware and write some test for computer vision application base on different hardware architecture  and Evaluation hardware.
+## Overview
 
-Do you want to know your program Automatically adjusting brightness of image in the right way?, How do you know using generic sharpening kernel to remove blurriness is working?, How to do check FPS process?, Which OCR system work better for your input image?
+Standardized testing methodologies for CV applications where traditional software testing falls short. This project addresses the unique challenges of testing **image and video processing pipelines** where outputs are visual and correctness is subjective.
 
+## Test Categories
 
-* Docker Test: testing computer vision application for different docker setup; how to optimize input/output for docker which use inputs such as images or videos; how to test for load balancing, number of pods, memory usage; CPU usage; Bandwidth ; how to compress data; how to encrypt/decrypt data for using in docker; check the connectivity issue; REST API, FAST API, JSON file checker; converting format; converting labeling format; check the version of library and packages; 
-* profiling the performance of the pipeline; writing clean code for certification; software certification standards, e.g. ISO27001, DO160
-* 
+| Test Type | Purpose | Tools |
+|-----------|---------|-------|
+| **Unit Tests** | Individual function correctness | Google Test, OpenCV assertions |
+| **Integration Tests** | Pipeline stage interactions | Custom validators |
+| **System Tests** | End-to-end application behavior | Docker, profiling |
+| **Acceptance Tests** | Business requirement validation | Visual comparison metrics |
 
+## Key Capabilities
 
-# image processing functions to get information from each step of computer vision algorithms
-in the "ImageProcessingClass" I created several functions which help you to get more information from each image after each step of image processing algorithms 
+### Image Quality Metrics
+
+| Metric | Description | Use Case |
+|--------|-------------|----------|
+| **PSNR** | Peak Signal-to-Noise Ratio | Image reconstruction quality |
+| **SSIM** | Structural Similarity Index | Perceptual quality comparison |
+| **MSE** | Mean Squared Error | Pixel-level accuracy |
+| **LPIPS** | Learned Perceptual Image Patch Similarity | Deep feature-based quality |
+| **FID** | Fréchet Inception Distance | Generated image quality |
+| **CLIP Score** | Text-image alignment | Generative model evaluation |
+
+### Performance Profiling
+
+- **Processing time** per frame / per pipeline stage
+- **Memory usage** monitoring (peak, average, leak detection)
+- **CPU/GPU utilization** tracking
+- **FPS** measurement under load
+- **Latency distribution** (P50, P95, P99)
+
+### Docker Testing
+
+- Containerized environment testing
+- Input/output format validation
+- Load balancing and pod scaling tests
+- Bandwidth and compression benchmarks
+- REST API / FastAPI endpoint validation
+
+### Hardware Evaluation
+
+- Multi-platform testing (CPU, GPU, edge devices)
+- Comparison across hardware architectures
+- Power consumption profiling
+- Thermal throttling detection
+
+## ImageProcessingClass
+
+The `ImageProcessingClass` provides utility functions to extract information from each step of CV algorithms:
+
+```cpp
+#include "ImageProcessingClass.h"
+
+// Get intermediate results from pipeline stages
+ImageProcessingClass ipc;
+auto featureMap = ipc.getIntermediateResult(stage_idx);
+auto metrics = ipc.computeMetrics(groundTruth, output);
+```
+
+## 2025–2026: Modern CV Testing Tools
+
+### Testing Frameworks
+
+| Tool | Type | Key Feature |
+|------|------|-------------|
+| **Google Test** | Unit testing | C++ standard, mocking |
+| **pytest** | Python testing | Fixture-based, parametrized |
+| **FiftyOne** | Dataset evaluation | Visual model analysis |
+| **TorchMetrics** | DL metrics | Standardized metric computation |
+| **OpenCV DNN** | Inference testing | Cross-backend validation |
+
+### CI/CD for CV
+
+```yaml
+# GitHub Actions example
+- name: Run CV Tests
+  run: |
+    pytest tests/unit/ -v
+    pytest tests/integration/ -v
+    python tests/visual_regression.py --threshold 0.95
+    docker-compose -f tests/docker-compose.test.yml up
+```
+
+### Visual Regression Testing (2025+)
+
+| Method | Accuracy | Speed |
+|--------|----------|-------|
+| **Pixel-wise diff** | Low (brittle) | Fast |
+| **SSIM comparison** | Medium | Fast |
+| **LPIPS (perceptual)** | High | Medium |
+| **CLIP-based evaluation** | High (semantic) | Slow |
+| **Human preference score** | Gold standard | Manual |
+
+### Recommended Stack
+
+```bash
+# Testing dependencies
+pip install pytest fiftyone torchmetrics lpips
+pip install ultralytics onnxruntime-gpu
+
+# C++ testing
+vcpkg install gtest opencv4
+```
+
+## Software Certification
+
+| Standard | Domain |
+|----------|--------|
+| **ISO 27001** | Information security management |
+| **DO-160** | Environmental conditions for airborne equipment |
+| **ISO 26262** | Automotive functional safety |
+| **IEC 62304** | Medical device software lifecycle |
+| **ISO 9001** | Quality management systems |
+
+## Project Structure
+
+```
+cvtest/
+├── Book/
+│   └── Chapter_01_01.cpp    # Chapter code examples
+├── cvtest/
+│   ├── ImageProcessingClass.cpp
+│   ├── ImageProcessingClass.h
+│   ├── cvtest.sln
+│   └── cvtest.vcxproj
+├── LICENSE
+└── README.md
+```
+
+## Requirements
+
+- Visual Studio 2022 (v143 toolset)
+- OpenCV 4.10+
+- Google Test (via vcpkg)
+- CMake 3.20+
+
+## References
+
+- [OpenCV Testing Module](https://github.com/opencv/opencv/tree/4.x/modules/ts)
+- [Google Test Primer](https://google.github.io/googletest/primer.html)
+- [FiftyOne Model Evaluation](https://docs.voxel51.com/)
+- [TorchMetrics](https://torchmetrics.readthedocs.io/)
+
+## Author
+
+**Farshid Pirahansiah**
+- Website: [pirahansiah.com](https://www.pirahansiah.com)
+- GitHub: [github.com/pirahansiah](https://github.com/pirahansiah)
+- LinkedIn: [linkedin.com/in/pirahansiah](https://www.linkedin.com/in/pirahansiah)
+
+## License
+
+Apache License 2.0 — See [LICENSE](LICENSE) for details.
